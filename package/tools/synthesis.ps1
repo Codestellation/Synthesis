@@ -1,4 +1,6 @@
 ﻿Properties {
+	$outputdir = Join-Path $basedir 'Build'
+	$nugetdir = Join-Path $basedir 'Nuget'
 	$frameworks = '4.0','4.5'
     $version = Get-Version
     
