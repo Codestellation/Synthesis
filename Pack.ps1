@@ -1,4 +1,4 @@
-﻿$utils = (Get-ChildItem -Include utils.ps1 -Recurse).FullName
+﻿$utils = (Get-ChildItem -Include synthesis.utils.ps1 -Recurse).FullName
 #Including function from utils. So called dot sourcing (dot and a space before path to script)
 . "$utils"
 
