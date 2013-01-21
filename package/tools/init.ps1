@@ -18,6 +18,6 @@ do{
 }
 while(!$solution -or $solutiondir -eq $solutiondir.Root)
 
-$buildps1 = Get-ChildItem build.ps1 -Path $toolsPath -Recurse
+$buildps1 = (Get-ChildItem build.ps1 -Path $solutiondir -Recurse).FullName
 
 Copy-Item $buildps1 -Destination $solutiondir -Force
