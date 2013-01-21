@@ -71,8 +71,9 @@ Task Pack -depends Test {
             $packagedir = "$nugetdir\$projectname"
 			$libdir = "$packagedir\lib\net$dotlessFramework" + '\'
 			$config = "Release"
+			$skipCopyLocalPath = (Get-ChildItem SkipCopyLocal.targets -Path . -Recurse).FullName
 			#TODO Move this to utils for the sake of incapsulation ugly string concats.
-            $props = "/p:TargetFrameworkVersion=$framework;Configuration=$config;OutDir=$libdir;CustomAfterMicrosoftCommonTargets=$basedir\SkipCopyLocal.targets"
+            $props = "/p:TargetFrameworkVersion=$framework;Configuration=$config;OutDir=$libdir;CustomAfterMicrosoftCommonTargets=$skipCopyLocalPath"
             
             Exec {
                 msbuild $projectfile  /t:Rebuild $props /verbosity:minimal /nologo
