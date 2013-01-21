@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Codestellation.Comon</id>
+    <version>0.0</version>
+    <authors>Codestellation project</authors>
+    <owners>Jury Soldatenkov, Ilya Dubadenko</owners>
+    <licenseUrl>https://github.com/Codestellation/Sinthesis/blob/master/license.txt</licenseUrl>
+    <projectUrl>https://github.com/Codestellation/Sinthesis</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Build scripts for Codestellation projects.</description>
+    <copyright>Copyright (c) 2013 Codestellation</copyright>
+  </metadata>
+</package>

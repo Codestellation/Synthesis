@@ -26,6 +26,19 @@
 	return @{ version = $version; commit = $commit; dirty = $dirty  }
 }
 
+function Generate-Package-Version
+{
+	param([hashtable]$version)
+	
+	$result = $version['version']
+        if($version['dirty'])
+        {
+            $result += '-dirty'
+            Write-Warning "Working directory is dirty. Package will be marked as dirty - $result"
+        }	
+	return $result
+}
+
 function Generate-Assembly-Info
 {
 	param(
