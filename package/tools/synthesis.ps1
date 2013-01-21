@@ -1,19 +1,19 @@
 ﻿Properties {
-    $basedir = Get-Location
-    $outputdir = Join-Path $basedir 'Build'
-	$nugetdir = Join-Path $basedir 'Nuget'
-    $quotedoutputdir = '"' + $outputdir + '"'
-    $frameworks = '4.0','4.5'
+	$frameworks = '4.0','4.5'
     $version = Get-Version
-    $nuget = (Get-ChildItem -Path $basedir -Include nuget.exe -Recurse).FullName
+    
 }
 $utils = (Get-ChildItem synthesis.utils.ps1  -Path $basedir -Recurse).FullName 
 include $utils
 
 Task Default -depends Pack
 
-Task Clean {
-    if(Test-Path $outputdir)
+Task Init {
+	Set-Location $basedir
+}
+
+Task Clean -depends Init {
+	if(Test-Path $outputdir)
     {
         Remove-Item -Path $outputdir -Recurse -Force
     }
@@ -33,9 +33,10 @@ Task SetVersion {
 Task Build -depends Clean, SetVersion {
     if(!$solution)
     {
-        $solution = Get-Item -Path .\ -Include *.sln
+		$solution = Get-Item -Path $basedir -Include *.sln
     }
     
+	$quotedoutputdir = $outputdir = '"' + $outputdir + '"'
     Exec { 
 		msbuild $solution /p:OutDir=$quotedoutputdir\ /verbosity:minimal 		
     }
@@ -60,7 +61,8 @@ Task Test -depends Build {
 Task Pack -depends Test {
     
     [System.IO.FileInfo[]]$projects = @(Get-ChildItem -Include *.csproj -Exclude *.Tests.csproj -Recurse)
-
+	$nuget = (Get-ChildItem -Path $basedir -Include nuget.exe -Recurse).FullName
+	
 	foreach($project in $projects)
 	{
 		foreach($framework in $frameworks)
@@ -82,6 +84,10 @@ Task Pack -depends Test {
         $projectdir = $project.Directory.FullName;
         
         $nuspec = (Get-ChildItem -Path $projectdir -Include *.nuspec -Recurse).FullName
+	if(!$nuspec)
+		{
+			throw "Not found nuspec for project $projectfile"
+		}
         
         $nugetVersion = $version['version']
         if($version['dirty'])
