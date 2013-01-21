@@ -7,7 +7,7 @@
     $version = Get-Version
     $nuget = (Get-ChildItem -Path $basedir -Include nuget.exe -Recurse).FullName
 }
-$utils = (Get-ChildItem synthesis.util.ps1  -Path $basedir -Recurse).FullName 
+$utils = (Get-ChildItem synthesis.utils.ps1  -Path $basedir -Recurse).FullName 
 include $utils
 
 Task Default -depends Pack
