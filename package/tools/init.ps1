@@ -18,6 +18,8 @@ do{
 }
 while(!$solution -or $solutiondir -eq $solutiondir.Root)
 
-$buildps1 = (Get-ChildItem build.ps1 -Path $solutiondir -Recurse).FullName
+#$buildps1 = (Get-ChildItem build.ps1 -Path $solutiondir -Recurse -Filter *synthesis*).FullName
 
-Copy-Item $buildps1 -Destination $solutiondir -Force
+$buildps1 = Join-Path $toolsPath 'build.ps1'
+
+Copy-Item $buildps1 -Destination $solutiondir -Force 
