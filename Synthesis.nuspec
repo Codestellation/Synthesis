@@ -10,5 +10,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Build scripts for Codestellation projects.</description>
     <copyright>Copyright (c) 2013 Codestellation</copyright>
+    <dependencies>
+        <dependency id="psake" version="4.2.0.1" />
+        <dependency id="NUnit.Runners" version="2.6.2" />
+    </dependencies>
   </metadata>
 </package>
