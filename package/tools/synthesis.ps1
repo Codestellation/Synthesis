@@ -55,7 +55,7 @@ Task Test -depends Build {
 		Write-Warning $linearAsms
 		Write-Warning $nunit
         Exec {
-           & $nunit $linearAsms /domain:single
+           & $nunit $linearAsms /domain:single /nologo
         }
     }
 }
@@ -64,24 +64,29 @@ Task Pack -depends Test {
     
     [System.IO.FileInfo[]]$projects = @(Get-ChildItem -Include *.csproj -Exclude *.Tests.csproj -Recurse)
 	$nuget = (Get-ChildItem -Path $basedir -Include nuget.exe -Recurse).FullName
-	
 	foreach($project in $projects)
 	{
 		foreach($framework in $frameworks)
 		{
-            $projectname = $project.Name.Replace(".csproj", [System.String]::Empty)
-            $projectfile = $project.FullName
-            $dotlessFramework = $framework.Replace('.','')
-            $packagedir = "$nugetdir\$projectname"
-			$libdir = "$packagedir\lib\net$dotlessFramework" + '\'
+			if(!$solution)
+	    	{
+				$solution = Get-Item -Path $basedir -Include *.sln
+	    	}
 			$config = "Release"
+			$projectname = $project.Name.Replace(".csproj", [System.String]::Empty)
+			$packagedir = "$nugetdir\$projectname"
+			$projectfile = $project.FullName
 			$skipCopyLocalPath = (Get-ChildItem SkipCopyLocal.targets -Path . -Recurse).FullName
-			#TODO Move this to utils for the sake of incapsulation ugly string concats.
-            $props = "/p:TargetFrameworkVersion=$framework;Configuration=$config;OutDir=$libdir;CustomAfterMicrosoftCommonTargets=$skipCopyLocalPath"
-            
-            Exec {
-                msbuild $projectfile  /t:Rebuild $props /verbosity:minimal /nologo
-            }
+			$dotlessFramework = $framework.Replace('.','')
+			
+			$outDir = "$packagedir\lib\net$dotlessFramework"
+			$props = "/p:TargetFrameworkVersion=$framework;Configuration=$config;OutDir=$outDir\"
+			
+			Exec{
+				msbuild $project /t:Rebuild $props /nologo /verbosity:minimal
+	        }
+
+			Get-ChildItem -Path $outDir -Exclude "*$projectname.???" | del -Force
 		}
         $projectdir = $project.Directory.FullName;
         
@@ -101,7 +106,5 @@ Task Pack -depends Test {
         Exec {
            & $nuget pack $nuspec -BasePath $packagedir -Version $nugetVersion -Symbols -ExcludeEmptyDirectories
         }
-         
-
 	}
 }
