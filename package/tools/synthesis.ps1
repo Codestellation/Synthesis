@@ -62,7 +62,7 @@ Task Test -depends Build {
 
 Task Pack -depends Test {
     
-    [System.IO.FileInfo[]]$projects = @(Get-ChildItem -Include *.csproj -Exclude *.Tests.csproj -Recurse)
+    [System.IO.FileInfo[]]$projects = @(Get-ChildItem -Include *.csproj -Exclude *.Tests.csproj, Samples* -Recurse) | where {!($_.FullName.Contains("Samples")) }
 	$nuget = (Get-ChildItem -Path $basedir -Include nuget.exe -Recurse).FullName
 	foreach($project in $projects)
 	{
