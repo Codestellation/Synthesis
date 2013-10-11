@@ -62,8 +62,9 @@ Task Test -depends Build {
 
 Task Pack -depends Test {
     
-    [System.IO.FileInfo[]]$projects = @(Get-ChildItem -Include *.csproj -Exclude *.Tests.csproj, Samples* -Recurse) | where {!($_.FullName.Contains("Samples")) }
+    [System.IO.FileInfo[]]$projects = @(Get-ChildItem -Include *.csproj -Exclude *.Tests.csproj, *Sample* -Recurse) | where {!($_.FullName.Contains("Samples")) }
 	$nuget = (Get-ChildItem -Path $basedir -Include nuget.exe -Recurse).FullName
+    
 	foreach($project in $projects)
 	{
 		foreach($framework in $frameworks)
@@ -86,14 +87,15 @@ Task Pack -depends Test {
 				msbuild $project /t:Rebuild $props /nologo /verbosity:minimal
 	        }
 
-			Get-ChildItem -Path $outDir -Exclude "*$projectname.???" | del -Force
+			Get-ChildItem -Path $outDir -Exclude "*$projectname.???" | del -Force -Recurse
 		}
         $projectdir = $project.Directory.FullName;
         
         $nuspec = (Get-ChildItem -Path $projectdir -Include *.nuspec -Recurse).FullName
-	if(!$nuspec)
+        if(!$nuspec)
 		{
-			throw "Not found nuspec for project $projectfile"
+			write-warning  "Not found nuspec for project $projectfile"
+            continue
 		}
         
         $nugetVersion = $version['version']
