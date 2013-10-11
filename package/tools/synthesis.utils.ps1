@@ -5,8 +5,10 @@
 	#0.0-1-g3655-dirty
 	$tokens = $gitTag.Split('-')
 	
-	$version = $tokens[0]
-
+	[string]$version = $tokens[0]
+    
+    $version=$version.Replace("v","")
+    
 	if($gitTag.Contains("dirty"))
 	{
 		$dirty = "dirty"
