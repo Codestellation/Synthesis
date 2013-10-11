@@ -46,7 +46,9 @@ function Generate-Assembly-Info
 	param(
 		[string]$version,
 		[string]$commit,
-		[string]$dirty
+		[string]$dirty,
+        [string]$company,
+        [string]$copyright
 	)
 
 	$asmInfoVersion = "$version $commit"
@@ -60,11 +62,19 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyCompanyAttribute(""Codestellation"")]
-[assembly: AssemblyCopyrightAttribute(""Copyright (c) 2012-2013 Codestellation"")]
 [assembly: AssemblyVersionAttribute(""$version"")]
 [assembly: AssemblyInformationalVersionAttribute(""$asmInfoVersion"")]
-[assembly: AssemblyFileVersionAttribute(""$version"")]"
-
+[assembly: AssemblyFileVersionAttribute(""$version"")]
+"
+if($company)
+{
+    $asmInfo = $asmInfo + "[assembly: AssemblyCompanyAttribute(""$company"")]
+"
+}
+if($copyright)
+{
+    $asmInfo = $asmInfo + "[assembly: AssemblyCopyrightAttribute(""$copyright"")]
+    "
+}
 	return $asmInfo;
 }
