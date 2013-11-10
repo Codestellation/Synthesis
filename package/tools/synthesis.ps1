@@ -47,7 +47,7 @@ Task Build -depends Clean, SetVersion {
 Task Test -depends Build {
     
     $nunit = (Get-ChildItem 'nunit-console.exe' -Path $basedir -Recurse).FullName
-    $assemblies = @(Get-ChildItem *.Tests.dll -Path $outputdir | %{ $_.FullName} )
+    $assemblies = @(Get-ChildItem *Tests.dll -Path $outputdir | %{ $_.FullName} )
     
 	if($assemblies)    
     {
@@ -67,16 +67,27 @@ Task Pack -depends Test {
     
 	foreach($project in $projects)
 	{
+		$projectfile = $project.FullName
+		write "Packing project '$project'"
+
+		$projectdir = $project.Directory.FullName;
+		$nuspec = (Get-ChildItem -Path $projectdir -Include *.nuspec -Recurse).FullName
+		if(!$nuspec)
+		{
+			write-warning  "Not found nuspec for project '$projectfile'. Skipped."
+			continue
+		}
+		
 		foreach($framework in $frameworks)
 		{
 			if(!$solution)
-	    	{
+			{
 				$solution = Get-Item -Path $basedir -Include *.sln
-	    	}
+			}
 			$config = "Release"
 			$projectname = $project.Name.Replace(".csproj", [System.String]::Empty)
 			$packagedir = "$nugetdir\$projectname"
-			$projectfile = $project.FullName
+			
 			$skipCopyLocalPath = (Get-ChildItem SkipCopyLocal.targets -Path . -Recurse).FullName
 			$dotlessFramework = $framework.Replace('.','')
 			
@@ -85,28 +96,20 @@ Task Pack -depends Test {
 			
 			Exec{
 				msbuild $project /t:Rebuild $props /nologo /verbosity:minimal
-	        }
+		}
 
-			Get-ChildItem -Path $outDir -Exclude "*$projectname.???" | del -Force -Recurse
-		}
-        $projectdir = $project.Directory.FullName;
-        
-        $nuspec = (Get-ChildItem -Path $projectdir -Include *.nuspec -Recurse).FullName
-        if(!$nuspec)
+		Get-ChildItem -Path $outDir -Exclude "*$projectname.???" | del -Force -Recurse
+
+
+		$nugetVersion = $version['version']
+		if($version['dirty'])
 		{
-			write-warning  "Not found nuspec for project $projectfile"
-            continue
+			$nugetVersion += '-dirty'
+			Write-Warning "Working directory is dirty. Package will be marked as dirty - $nugetVersion"
 		}
-        
-        $nugetVersion = $version['version']
-        if($version['dirty'])
-        {
-            $nugetVersion += '-dirty'
-            Write-Warning "Working directory is dirty. Package will be marked as dirty - $nugetVersion"
-        }
-        write 'Building nuget package '
-        Exec {
-           & $nuget pack $nuspec -BasePath $packagedir -Version $nugetVersion -Symbols -ExcludeEmptyDirectories
-        }
+		write 'Building nuget package '
+		Exec {
+			& $nuget pack $nuspec -BasePath $packagedir -Version $nugetVersion -Symbols -ExcludeEmptyDirectories
+		}
 	}
 }
