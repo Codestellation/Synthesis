@@ -71,14 +71,13 @@ Task Pack -depends Test {
 		write "Packing project '$project'"
 
 		$projectdir = $project.Directory.FullName;
+        
 		$nuspec = (Get-ChildItem -Path $projectdir -Include *.nuspec -Recurse).FullName
 		if(!$nuspec)
 		{
-			write-warning  "Not found nuspec for project '$projectfile'. Skipped."
 			continue
 		}
-		
-		foreach($framework in $frameworks)
+        foreach($framework in $frameworks)
 		{
 			if(!$solution)
 			{
@@ -96,6 +95,7 @@ Task Pack -depends Test {
 			
 			Exec{
 				msbuild $project /t:Rebuild $props /nologo /verbosity:minimal
+            }
 		}
 
 		Get-ChildItem -Path $outDir -Exclude "*$projectname.???" | del -Force -Recurse
