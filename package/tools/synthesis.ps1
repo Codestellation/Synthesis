@@ -96,10 +96,9 @@ Task Pack -depends Test {
 			Exec{
 				msbuild $project /t:Rebuild $props /nologo /verbosity:minimal
             }
+            
+            Get-ChildItem -Path $outDir -Exclude "*$projectname.???" | del -Force -Recurse
 		}
-
-		Get-ChildItem -Path $outDir -Exclude "*$projectname.???" | del -Force -Recurse
-
 
 		$nugetVersion = $version['version']
 		if($version['dirty'])
