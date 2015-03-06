@@ -91,7 +91,7 @@ Task Pack -depends Test {
 			$dotlessFramework = $framework.Replace('.','')
 			
 			$outDir = "$packagedir\lib\net$dotlessFramework"
-			$props = "/p:DefineConstants=""$dotlessFramework""TargetFrameworkVersion=$framework;Configuration=$config;OutDir=$outDir\"
+			$props = "/p:DefineConstants=NET""$dotlessFramework"";TargetFrameworkVersion=$framework;Configuration=$config;OutDir=$outDir\"
 			
 			Exec{
 				msbuild $project /t:Rebuild $props /nologo /verbosity:minimal
