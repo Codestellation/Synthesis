@@ -32,7 +32,14 @@ Task SetVersion {
 	$SolutionVersion > SolutionVersion.cs 
 }
 
-Task Build -depends Clean, SetVersion {
+Task RestorePackages {
+    $nuget = (Get-ChildItem -Path $basedir -Include nuget.exe -Recurse).FullName
+    Exec {
+			& $nuget restore
+		}
+}
+
+Task Build -depends Clean, SetVersion, RestorePackages {
     if(!$solution)
     {
 		$solution = Get-Item -Path $basedir -Include *.sln
