@@ -59,8 +59,7 @@ Task Test -depends Build {
 	if($assemblies)    
     {
         $linearAsms = [System.String]::Join(" ", $assemblies)
-		Write-Warning $linearAsms
-		Write-Warning $nunit
+
         Exec {
            & $nunit $linearAsms /domain:single /nologo
         }
@@ -115,7 +114,7 @@ Task Pack -depends Test {
 		}
 		write 'Building nuget package '
 		Exec {
-			& $nuget pack $nuspec -BasePath $packagedir -Version $nugetVersion -Symbols -ExcludeEmptyDirectories
+			& $nuget pack $nuspec -BasePath $packagedir -Version $nugetVersion -ExcludeEmptyDirectories
 		}
 	}
 }
